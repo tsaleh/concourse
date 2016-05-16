@@ -424,7 +424,7 @@ templates:
   - &fedora-dependencies
     task: fedora-dependencies
     params: &fedora-dependencies-params
-      USER_NAME: fedora
+      USER_NAME: ""
     config:
       platform: linux
 
