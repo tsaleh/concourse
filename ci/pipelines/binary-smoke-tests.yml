@@ -1,5 +1,4 @@
 ---
-
 templates:
   - &setup-tugboat
     task: setup-tugboat
@@ -161,6 +160,9 @@ templates:
         source:
           repository: concourse/binary-test-ec2
 
+      inputs:
+      - name: concourse
+
       outputs:
       - name: instance
       - name: keys
@@ -180,11 +182,9 @@ templates:
           region = us-east-1
           EOF
 
-          VPC_CIDR_BLOCK="10.0.0.0/16"
-          SUBNET_CIDR_BLOCK="10.0.0.0/24"
-
-          #only works on Linux (use uuidgen otherwise)
           KEY_NAME="bin-test-$(date +%s)"
+          STACK_NAME="bin-test-${IMAGE_ID}-$(date +%s)"
+
           aws ec2 wait image-exists --image-ids $IMAGE_ID
 
           set +x
@@ -195,31 +195,14 @@ templates:
           chmod 0400 keys/id_rsa
           set -x
 
-          VPC_ID=$(aws ec2 create-vpc --cidr-block $VPC_CIDR_BLOCK | jq ".Vpc.VpcId" | tr -d '"')
+          aws cloudformation create-stack \
+            --stack-name $STACK_NAME
+            --template-body `cat concourse/ci/templates/binary-test-cloudformation-template.json` \
+            --parameters ParameterKey=EC2KeyPairParameter,ParameterValue=${KEY_NAME} \
+            > create-stack.output
 
-          trap "aws ec2 delete-vpc --vpc-id $VPC_ID" ERR TERM INT
-
-          aws ec2 wait vpc-available --vpc-ids $VPC_ID
-
-          SUBNET_ID=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block $SUBNET_CIDR_BLOCK | jq ".Subnet.SubnetId" | tr -d '"')
-          aws ec2 wait subnet-available --subnet-ids $SUBNET_ID
-
-          ip_info=$(aws ec2 allocate-address)
-          IP=$(echo $ip_info | jq ".PublicIp" | tr -d '"')
+          IP=$(cat create-stack.output | jq ".[0].Outputs[0].OutputValue" | tr -d '"')
           echo $IP > instance/ip
-
-          ALLOCATION_ID=$(echo $ip_info | jq ".AllocationId" | tr -d '"')
-
-          GATEWAY_ID=$(aws ec2 create-internet-gateway | jq ".InternetGateway.InternetGatewayId" | tr -d '"')
-          aws ec2 attach-internet-gateway --internet-gateway-id $GATEWAY_ID --vpc-id $VPC_ID
-
-          ROUTE_TABLE_ID=$(aws ec2 describe-route-tables --filters "Name=vpc-id,Values=$VPC_ID" | jq ".RouteTables[0].RouteTableId" | tr -d '"')
-          aws ec2 create-route --route-table-id $ROUTE_TABLE_ID --destination-cidr-block 0.0.0.0/0 --gateway-id $GATEWAY_ID
-
-          SECURITY_GROUP_ID=$(aws ec2 create-security-group --group-name "concourse binary test security group" --description "concourse binary test security group" --vpc-id $VPC_ID | jq ".GroupId" | tr -d '"')
-          aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 22 --cidr 0.0.0.0/0
-
-          INSTANCE_ID=$(aws ec2 run-instances --image-id $IMAGE_ID --key-name $KEY_NAME --security-group-ids $SECURITY_GROUP_ID --instance-type m4.large --subnet-id $SUBNET_ID | jq ".Instances[0].InstanceId" | tr -d '"')
 
           cat << EOF > instance/cleanup
           #!/usr/bin/env bash
@@ -230,60 +213,13 @@ templates:
 
           set -e -x
 
-          INSTANCE_ID=$INSTANCE_ID
-          ALLOCATION_ID=$ALLOCATION_ID
+          STACK_NAME=$STACK_NAME
           KEY_NAME=$KEY_NAME
-          SECURITY_GROUP_ID=$SECURITY_GROUP_ID
-          SUBNET_ID=$SUBNET_ID
-          GATEWAY_ID=$GATEWAY_ID
-          VPC_ID=$VPC_ID
 
           function cleanup_account()
           {
-
-            if [ -n "$INSTANCE_ID" ]; then
-              until aws ec2 terminate-instances --instance-ids $INSTANCE_ID; do
-                echo "terminating instance"
-                sleep 1
-              done
-
-              aws ec2 wait instance-terminated --instance-ids $INSTANCE_ID
-            fi
-
-            until aws ec2 release-address --allocation-id $ALLOCATION_ID; do
-              echo "releasing elastic ip"
-              sleep 1
-            done
-
-            until aws ec2 delete-key-pair --key-name $KEY_NAME; do
-              echo "deleting key pair"
-              sleep 1
-            done
-
-            until aws ec2 delete-security-group --group-id $SECURITY_GROUP_ID; do
-              echo "deleting security group"
-              sleep 1
-            done
-
-            until aws ec2 delete-subnet --subnet-id $SUBNET_ID; do
-              echo "deleting subnet"
-              sleep 1
-            done
-
-            until aws ec2 detach-internet-gateway --internet-gateway-id $GATEWAY_ID --vpc-id $VPC_ID; do
-              echo "detaching internet gateway"
-              sleep 1
-            done
-
-            until aws ec2 delete-internet-gateway --internet-gateway-id $GATEWAY_ID; do
-              echo "echo deleting internet gateway"
-              sleep 1
-            done
-
-            until aws ec2 delete-vpc --vpc-id $VPC_ID; do
-              echo "deleting vpc"
-              sleep 1
-            done
+            aws ec2 delete-key-pair --key-name $KEY_NAME
+            aws cloudformation delete-stack --stack-name $STACK_NAME
           }
 
           cleanup_account
@@ -292,11 +228,6 @@ templates:
           chmod +x instance/cleanup
 
           trap ./instance/cleanup ERR TERM INT
-
-          aws ec2 wait instance-running --instance-ids $INSTANCE_ID
-          aws ec2 wait instance-status-ok --instance-ids $INSTANCE_ID
-
-          aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $ALLOCATION_ID
 
           until ssh -q -i keys/id_rsa -o StrictHostKeyChecking=no $USER_NAME@$IP "exit 0"; do
             echo "waiting for ssh to become available..."
