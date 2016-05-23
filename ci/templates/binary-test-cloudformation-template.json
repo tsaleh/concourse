@@ -5,7 +5,7 @@
       "Type": "AWS::EC2::VPC",
       "Properties": {
         "CidrBlock": "10.0.0.0/16"
-      },
+      }
     },
     "EC2S48CRX": {
       "Type": "AWS::EC2::Subnet",
@@ -111,7 +111,7 @@
         "SubnetId": {
           "Ref": "EC2S48CRX"
         }
-      },
+      }
     },
     "EC2VPCGMTOU": {
       "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -122,7 +122,7 @@
         "VpcId": {
           "Ref": "EC2VPC2H8ZY"
         }
-      },
+      }
     },
     "EC2I27TDS": {
       "Type": "AWS::EC2::Instance",
@@ -140,8 +140,7 @@
             "Ref": "EC2SG1BSHH"
           }
         ]
-      },
-
+      }
     }
   },
   "Parameters": {
@@ -153,7 +152,7 @@
   "Outputs": {
     "ElasticIPAllocationID": {
       "Description": "a handle that allows you to look up the allocated elastic IP",
-      "Value": { "Fn::GetAtt" : [ "AWS::EC2::EIP", "AllocationId" ]}
+      "Value": { "Fn::GetAtt" : [ "EC2EIP12N3S", "AllocationId" ]}
     }
   }
 }

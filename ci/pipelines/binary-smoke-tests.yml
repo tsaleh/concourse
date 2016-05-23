@@ -161,7 +161,7 @@ templates:
           repository: concourse/binary-test-ec2
 
       inputs:
-      - name: concourse
+      - name: cloudformation-template
 
       outputs:
       - name: instance
@@ -196,12 +196,17 @@ templates:
           set -x
 
           aws cloudformation create-stack \
-            --stack-name $STACK_NAME
-            --template-body `cat concourse/ci/templates/binary-test-cloudformation-template.json` \
-            --parameters ParameterKey=EC2KeyPairParameter,ParameterValue=${KEY_NAME} \
-            > create-stack.output
+            --stack-name $STACK_NAME \
+            --template-url https://s3.amazonaws.com/cf-concourse-binary-test-fixtures/binary-test-cloudformation-template.json \
+            --parameters ParameterKey=EC2KeyPairParameter,ParameterValue=${KEY_NAME}
 
-          IP=$(cat create-stack.output | jq ".[0].Outputs[0].OutputValue" | tr -d '"')
+          while [ "$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq ".Stacks[0].StackStatus" | tr -d '"')" == "CREATE_IN_PROGRESS" ]; do
+            echo "waiting for stack to be created..."
+            sleep 10
+          done
+
+          ALLOCATION_ID=$(aws cloudformation describe-stacks --stack-name $STACK_NAME | jq ".Stacks[0].Outputs[0].OutputValue" | tr -d '"')
+          IP=$(aws ec2 describe-addresses --allocation-ids $ALLOCATION_ID | jq ".Addresses[0].PublicIp" | tr -d '"')
           echo $IP > instance/ip
 
           cat << EOF > instance/cleanup
@@ -511,6 +516,13 @@ resources:
     user: concourse
     repository: bin
     access_token: {{bin-release-token}}
+- name: cloudformation-template
+  type: s3
+  source:
+    access_key_id: {{binary-test-aws-access-key}}
+    secret_access_key: {{binary-test-aws-secret-key}}
+    bucket: cf-concourse-binary-test-fixtures
+    versioned_file: binary-test-cloudformation-template.json
 
 jobs:
   # empty job included for garden team debugging
@@ -606,10 +618,13 @@ jobs:
 - name: ec2-ubuntu-xenial
   serial: true
   plan:
-  - get: bin-rc
-    params:
-      globs:
-      - concourse_linux_amd64
+  - aggregate:
+    - get: bin-rc
+      params:
+        globs:
+        - concourse_linux_amd64
+
+    - get: cloudformation-template
 
   - <<: *launch-ec2-instance
     params:
@@ -635,10 +650,13 @@ jobs:
 - name: ec2-fedora-23
   serial: true
   plan:
-  - get: bin-rc
-    params:
-      globs:
-      - concourse_linux_amd64
+  - aggregate:
+    - get: bin-rc
+      params:
+        globs:
+        - concourse_linux_amd64
+
+    - get: cloudformation-template
 
   - <<: *launch-ec2-instance
     params:
@@ -665,74 +683,3 @@ jobs:
       params:
         <<: *test-binary-params
         USER_NAME: fedora
-
-
-  serial: true
-  plan:
-  - get: bin-rc
-    params:
-      globs:
-      - concourse_linux_amd64
-
-  - <<: *launch-ec2-instance
-    params:
-      <<: *launch-ec2-instance-params
-      USER_NAME: ec2-user
-      IMAGE_ID: ami-f5f41398
-
-  - ensure:
-      <<: *teardown-ec2-instance
-
-    do:
-
-    - task: install-postgres
-      params:
-        USER_NAME: "ec2-user"
-
-      config:
-        platform: linux
-
-        image_resource:
-          type: docker-image
-          source:
-            repository: ruby
-            tag: "2.1"
-
-        inputs:
-        - name: keys
-        - name: instance
-
-        run:
-          path: bash
-          args:
-          - -c
-          - |
-            cat <<EOC > install_postgres
-            set -ex
-
-            until sudo yum update; do
-              echo "waiting for yum lock"
-              sleep 1
-            done
-
-            until sudo yum -y install postgresql; do
-              echo "waiting for yum lock"
-              sleep 1
-            done
-
-            sudo -Hiu postgres psql -U postgres postgres <<EOF
-              CREATE USER $USER_NAME SUPERUSER PASSWORD '' ;
-            EOF
-
-            createdb atc
-            EOC
-
-            ip=$(cat instance/ip)
-
-            scp -q -i keys/id_rsa -o StrictHostKeyChecking=no install_postgres $USER_NAME@${ip}:
-            ssh -q -i keys/id_rsa -o StrictHostKeyChecking=no $USER_NAME@${ip} "chmod +x install_postgres && ./install_postgres"
-
-    - <<: *test-binary
-      params:
-        <<: *test-binary-params
-        USER_NAME: ec2-user
