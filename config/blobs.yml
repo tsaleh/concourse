@@ -4,61 +4,61 @@ postgresql/postgresql-9.3.4.tar.gz:
   object_id: a62f2cda-80fa-4daf-a59c-5acc9a6a3c2e
   sha: 9f80b3cfebc434ca0860fc8489923cea73456081
 resources/archive-resource.tar.gz:
-  object_id: ae80b920-c816-499a-b6ee-7a719a2fb70c
-  sha: 42abace8b6eb6fc2bcfed259f1d8fa5757f5e8af
-  size: 9625535
+  object_id: a1e21959-2754-4abc-ba3f-0000f9576fc3
+  sha: c10966746aafed10f63e200a172a7e260ce71b77
+  size: 9625496
 resources/bosh-deployment-resource.tar.gz:
-  object_id: 818ff85b-66d7-4432-aded-27bcb54130f7
-  sha: afee8425da1d9cb44b181060ec93fab5719bedab
-  size: 14958212
+  object_id: 6169e555-200d-4aa0-a1f2-9af19a104302
+  sha: c9331a885416ccdff72a10a0753ee6fc07e8dbc4
+  size: 14958458
 resources/bosh-io-release-resource.tar.gz:
-  object_id: 9ee2e839-9ce6-4a71-a61f-24d948f4a18e
-  sha: ecf09fb3139a76d5f3839b3f022e1c7c1d819858
-  size: 6839653
+  object_id: 7dd9de64-7769-4fd4-aedf-8ea202fb55bb
+  sha: 4a11492bc3c28e400d381baa0a2b7a6d289542a5
+  size: 6839439
 resources/bosh-io-stemcell-resource.tar.gz:
-  object_id: 4b195ee5-5f21-4d93-9287-44af7a85299b
-  sha: ab808a8c01fe95825880b93a45fdf8876fcdd3ac
-  size: 6839695
+  object_id: df0761e9-0a17-4c7a-afed-95309e5f14d1
+  sha: aa724259d8c82f0f6f6d82d31fd97d13678d15a7
+  size: 6839433
 resources/cf-resource.tar.gz:
-  object_id: 72eb3fc9-b380-4123-a9d8-955fe1099fb1
-  sha: 59527df623a7ad51591ed0fa96ae55996a91c66b
-  size: 20586604
+  object_id: a4bb6f35-417d-43d5-a573-a0812aa53db8
+  sha: 64450c58fc931945829ea04b5906863c98a7c0d9
+  size: 20668909
 resources/docker-image-resource.tar.gz:
-  object_id: e552e24a-7c03-418f-89f5-c4475cef23cd
-  sha: 0e27955b8b912efdae69f6ccea4585aef1b0e597
-  size: 34335078
+  object_id: 987e887b-f84d-4fdc-b1ee-21451909f041
+  sha: 6ce7044e3d5eaff489b66375345d67e41f0b1d8f
+  size: 34338761
 resources/git-resource.tar.gz:
-  object_id: 92b44b8d-00c8-4263-9e39-b6d4883d4288
-  sha: 27aefcdd71f71ac087920d898bf33068c062bf2e
-  size: 13913637
+  object_id: 4140c94d-97da-46bb-9341-1999586fdd07
+  sha: f6767cc0580fe7848838b3f9655881faf49b78dd
+  size: 13913265
 resources/github-release-resource.tar.gz:
-  object_id: a3e7a077-cd37-41ad-bfd0-e8379e90da5f
-  sha: f5c31c66a3d75f0bb50a32670b70269f45f42445
-  size: 14016392
+  object_id: 0137ffba-d282-44f9-a582-a2b516d82518
+  sha: e8dc8f84f6949a552242de1bdc5586f712fa9000
+  size: 14016450
 resources/pool-resource.tar.gz:
   object_id: 27631a92-c9e4-436b-b5f2-cec38eeab87d
   sha: d3bddbfc85a30f9ffad688fa782335aa8ce1f6b5
   size: 11285676
 resources/s3-resource.tar.gz:
-  object_id: 3bf57b01-1d30-43cb-9a0e-fcd0b5a0785b
-  sha: cd7e69f344c2b7ff9368366eb259296e916e11d7
-  size: 15418046
+  object_id: 5ae5674a-caad-45ef-8640-dfffbf3887af
+  sha: 0ac3acd4c2e3aa8131aa965256f4be962eafd961
+  size: 15420055
 resources/semver-resource.tar.gz:
   object_id: 724eaf4b-0786-4504-9aa0-ad73c86f3fa3
   sha: 0335e1c66b59c1ad34cd67381dd480462ff24678
   size: 18270313
 resources/time-resource.tar.gz:
-  object_id: 27f8f4a1-d0eb-4eb7-9bf7-f4ada2c14929
-  sha: 065def514f73574f82434db4939ebec2dffd9fc0
-  size: 8131057
+  object_id: 9381b535-c235-4842-affe-d9357bff4f22
+  sha: 4954e51dc5b01b86f6774136dbd6faf1ef185db2
+  size: 8132208
 resources/tracker-resource.tar.gz:
   object_id: cbc1e02d-8b1b-4a2b-b099-a14777d26411
   sha: 093232947cea882704f10653813f61f12b6aed27
   size: 14580009
 resources/vagrant-cloud-resource.tar.gz:
-  object_id: 9322b9fd-1f11-4f0a-8249-1f50a3d75479
-  sha: 02994aed4efb074f70ed9451256b90fd8bec5dde
-  size: 6841073
+  object_id: d8e6be95-6198-438e-a156-64cd73c6e81c
+  sha: 2dfa93665876f224dec7bcfb1c5772037c3cdc08
+  size: 6840986
 golang_1.6/go1.6.1.linux-amd64.tar.gz:
   object_id: 980f2086-2872-4159-a73f-77ea2905d21b
   sha: c73492474dcc7a233772d27e948b74468d9f1849
@@ -68,6 +68,6 @@ btrfs/btrfs-tools.tar.gz:
   sha: abdf982cee43881659adc24c3e347b37b65f8530
   size: 3016424
 resources/hg-resource.tar.gz:
-  object_id: 959d90aa-d45c-4e7d-93c8-74b2d8ee9251
-  sha: 189f915cd4604535df387519c11578c87edc390d
-  size: 16555287
+  object_id: e4db8e88-62d6-4e85-be81-c619783adfdb
+  sha: 389acc1c665f3b1a03cb75d0cbbcddb62772f2b4
+  size: 16554914

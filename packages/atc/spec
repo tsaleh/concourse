@@ -8,16 +8,18 @@ dependencies:
 files:
   - github.com/concourse/atc/web/templates/**/*
   - github.com/concourse/atc/web/public/**/*
+  - code.cloudfoundry.org/clock/*.go # gosub
+  - code.cloudfoundry.org/garden/*.go # gosub
+  - code.cloudfoundry.org/garden/client/*.go # gosub
+  - code.cloudfoundry.org/garden/client/connection/*.go # gosub
+  - code.cloudfoundry.org/garden/routes/*.go # gosub
+  - code.cloudfoundry.org/garden/transport/*.go # gosub
+  - code.cloudfoundry.org/gunk/urljoiner/*.go # gosub
+  - code.cloudfoundry.org/lager/*.go # gosub
   - github.com/BurntSushi/migration/*.go # gosub
   - github.com/bigdatadev/goryman/*.go # gosub
   - github.com/bigdatadev/goryman/proto/*.go # gosub
   - github.com/bmizerany/pat/*.go # gosub
-  - github.com/cloudfoundry-incubator/garden/*.go # gosub
-  - github.com/cloudfoundry-incubator/garden/client/*.go # gosub
-  - github.com/cloudfoundry-incubator/garden/client/connection/*.go # gosub
-  - github.com/cloudfoundry-incubator/garden/routes/*.go # gosub
-  - github.com/cloudfoundry-incubator/garden/transport/*.go # gosub
-  - github.com/cloudfoundry/gunk/urljoiner/*.go # gosub
   - github.com/concourse/atc/*.go # gosub
   - github.com/concourse/atc/api/*.go # gosub
   - github.com/concourse/atc/api/authserver/*.go # gosub
@@ -40,6 +42,8 @@ files:
   - github.com/concourse/atc/auth/*.go # gosub
   - github.com/concourse/atc/auth/github/*.go # gosub
   - github.com/concourse/atc/auth/provider/*.go # gosub
+  - github.com/concourse/atc/auth/uaa/*.go # gosub
+  - github.com/concourse/atc/auth/verifier/*.go # gosub
   - github.com/concourse/atc/buildreaper/*.go # gosub
   - github.com/concourse/atc/builds/*.go # gosub
   - github.com/concourse/atc/cmd/atc/*.go # gosub
@@ -58,9 +62,14 @@ files:
   - github.com/concourse/atc/radar/*.go # gosub
   - github.com/concourse/atc/resource/*.go # gosub
   - github.com/concourse/atc/scheduler/*.go # gosub
+  - github.com/concourse/atc/scheduler/buildstarter/*.go # gosub
+  - github.com/concourse/atc/scheduler/buildstarter/maxinflight/*.go # gosub
   - github.com/concourse/atc/scheduler/factory/*.go # gosub
+  - github.com/concourse/atc/scheduler/inputmapper/*.go # gosub
+  - github.com/concourse/atc/scheduler/inputmapper/inputconfig/*.go # gosub
   - github.com/concourse/atc/web/*.go # gosub
   - github.com/concourse/atc/web/authredirect/*.go # gosub
+  - github.com/concourse/atc/web/basicauth/*.go # gosub
   - github.com/concourse/atc/web/getbuild/*.go # gosub
   - github.com/concourse/atc/web/getbuilds/*.go # gosub
   - github.com/concourse/atc/web/getjob/*.go # gosub
@@ -101,8 +110,6 @@ files:
   - github.com/mitchellh/mapstructure/*.go # gosub
   - github.com/nu7hatch/gouuid/*.go # gosub
   - github.com/peterhellberg/link/*.go # gosub
-  - github.com/pivotal-golang/clock/*.go # gosub
-  - github.com/pivotal-golang/lager/*.go # gosub
   - github.com/tedsuo/ifrit/*.go # gosub
   - github.com/tedsuo/ifrit/grouper/*.go # gosub
   - github.com/tedsuo/ifrit/http_server/*.go # gosub
